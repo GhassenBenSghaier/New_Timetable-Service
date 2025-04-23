@@ -1,0 +1,65 @@
+server:
+  port: 8083
+spring:
+  application:
+    name: NEW_TIMETABLE-SERVICE
+  datasource:
+    url: jdbc:postgresql://localhost:5432/new_timetable_db
+    username: postgres
+    password: Informatique94
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        show_sql: true
+        format_sql: true
+    show-sql: true
+  mvc:
+    log-request-details: true
+logging:
+  level:
+    root: INFO
+    org.springframework: DEBUG
+    org.springframework.web: TRACE     # Enhanced for request debugging
+    org.springframework.web.client: DEBUG
+    org.hibernate: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql: TRACE
+    tn.esprit.newtimetableservice: TRACE  # Enhanced for service debugging
+    com.netflix.discovery: TRACE       # Enhanced for Eureka debugging
+    com.netflix.eureka: TRACE          # Enhanced for Eureka debugging
+eureka:
+  client:
+    enabled: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+    registry-fetch-interval-seconds: 5  # Faster registry fetch
+    healthcheck:
+      enabled: true                    # Tie status to health
+  instance:
+    leaseRenewalIntervalInSeconds: 10  # Faster heartbeat
+    leaseExpirationDurationInSeconds: 30  # Shorter expiration
+    prefer-ip-address: false           # Use localhost
+    hostname: localhost                # Explicit hostname
+    instance-id: localhost:new-timetable-service:8083  # Explicit instance ID
+    metadata-map:
+      hostname: localhost              # Enforce localhost in metadata
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info             # Enable health and info endpoints
+jwt:
+  secret: X7K9p2mQ8vL5rT3yZn6bQeF4uA1wJ9kLmN5oP6sR7tU8vW9xY0z1aB2c3d4E5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6A7B8C9D
+timetable:
+  population:
+    size: 300
+  mutation:
+    rate: 0.2
+  max:
+    generations: 200
