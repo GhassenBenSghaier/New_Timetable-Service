@@ -5,7 +5,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Copy the Spring Boot JAR file into the container
-COPY target/NEW_TIMETABLE-SERVICE-0.0.1-SNAPSHOT.jar app.jar
+COPY target/new_timetable-service-0.0.1-SNAPSHOT.jar app.jar
 
 # Expose the port defined in application.yml (8082)
 EXPOSE 8083
