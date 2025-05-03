@@ -21,6 +21,18 @@ public class ProgramService {
     @Autowired private SubjectRepository subjectRepository;
 
     public ProgramDTO createProgram(ProgramDTO request) {
+        Level level = levelRepository.findById(request.getLevelId())
+                .orElseThrow(() -> new IllegalArgumentException("Level not found"));
+
+        // Validate specialtyId based on supportsSpecialty
+        if (!level.isSupportsSpecialty() && request.getSpecialtyId() != null) {
+            throw new IllegalArgumentException("Level does not support specialties");
+        }
+        if (level.isSupportsSpecialty() && request.getSpecialtyId() != null) {
+            specialtyRepository.findById(request.getSpecialtyId())
+                    .orElseThrow(() -> new IllegalArgumentException("Specialty not found"));
+        }
+
         String programName = generateProgramName(request.getLevelId(), request.getSpecialtyId());
         request.setName(programName);
 
@@ -29,11 +41,7 @@ public class ProgramService {
         }
 
         Program program = new Program();
-        if (request.getLevelId() != null) {
-            Level level = levelRepository.findById(request.getLevelId())
-                    .orElseThrow(() -> new IllegalArgumentException("Level not found"));
-            program.setLevel(level);
-        }
+        program.setLevel(level);
         if (request.getSpecialtyId() != null) {
             Specialty specialty = specialtyRepository.findById(request.getSpecialtyId())
                     .orElseThrow(() -> new IllegalArgumentException("Specialty not found"));
@@ -66,18 +74,23 @@ public class ProgramService {
         Program program = programRepository.findById(request.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Program not found with ID: " + request.getId()));
 
+        Level level = levelRepository.findById(request.getLevelId())
+                .orElseThrow(() -> new IllegalArgumentException("Level not found"));
+
+        // Validate specialtyId based on supportsSpecialty
+        if (!level.isSupportsSpecialty() && request.getSpecialtyId() != null) {
+            throw new IllegalArgumentException("Level does not support specialties");
+        }
+        if (level.isSupportsSpecialty() && request.getSpecialtyId() != null) {
+            specialtyRepository.findById(request.getSpecialtyId())
+                    .orElseThrow(() -> new IllegalArgumentException("Specialty not found"));
+        }
+
         String programName = generateProgramName(request.getLevelId(), request.getSpecialtyId());
         request.setName(programName);
         program.setName(programName);
 
-        if (request.getLevelId() != null) {
-            Level level = levelRepository.findById(request.getLevelId())
-                    .orElseThrow(() -> new IllegalArgumentException("Level not found"));
-            program.setLevel(level);
-        } else {
-            program.setLevel(null);
-        }
-
+        program.setLevel(level);
         if (request.getSpecialtyId() != null) {
             Specialty specialty = specialtyRepository.findById(request.getSpecialtyId())
                     .orElseThrow(() -> new IllegalArgumentException("Specialty not found"));
@@ -149,10 +162,10 @@ public class ProgramService {
     }
 
     private String generateProgramName(Long levelId, Long specialtyId) {
-        String levelName = levelRepository.findById(levelId)
-                .map(Level::getName)
+        Level level = levelRepository.findById(levelId)
                 .orElseThrow(() -> new IllegalArgumentException("Level not found"));
-        if (specialtyId == null) {
+        String levelName = level.getName();
+        if (specialtyId == null || !level.isSupportsSpecialty()) {
             return levelName;
         }
         String specialtyName = specialtyRepository.findById(specialtyId)
@@ -186,6 +199,7 @@ public class ProgramService {
         LevelDTO dto = new LevelDTO();
         dto.setId(level.getId());
         dto.setName(level.getName());
+        dto.setSupportsSpecialty(level.isSupportsSpecialty());
         return dto;
     }
 

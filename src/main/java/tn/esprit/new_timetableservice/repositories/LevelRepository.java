@@ -6,6 +6,5 @@ import tn.esprit.new_timetableservice.entities.Level;
 import java.util.List;
 
 public interface LevelRepository extends JpaRepository<Level, Long> {
-    List<Level> findBySchoolId(Long schoolId);
+    List<Level> findBySupportsSpecialty(boolean supportsSpecialty);
 }
-

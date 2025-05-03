@@ -2,6 +2,7 @@ package tn.esprit.new_timetableservice.controllers;
 
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.new_timetableservice.dto.SchoolDTO;
@@ -34,7 +35,7 @@ public class SchoolController {
     }
 
     @PutMapping("/{id}")
-
+    @PreAuthorize("hasAuthority('MANAGE_SCHOOLS')")
     public ResponseEntity<SchoolDTO> update(@PathVariable Long id, @Valid @RequestBody SchoolDTO schoolDTO) {
         School school = new School();
         school.setId(id);
@@ -47,14 +48,14 @@ public class SchoolController {
     }
 
     @GetMapping("/{id}")
-
+    @PreAuthorize("hasAnyAuthority('MANAGE_SCHOOLS', 'MANAGE_CLASSROOMS', 'MANAGE_TIME_SLOTS', 'MANAGE_CLASSES')")
     public ResponseEntity<SchoolDTO> findById(@PathVariable Long id) {
         School school = service.findById(id);
         return ResponseEntity.ok(toDto(school));
     }
 
     @GetMapping
-
+    @PreAuthorize("hasAnyAuthority('MANAGE_SCHOOLS', 'MANAGE_CLASSROOMS', 'MANAGE_TIME_SLOTS', 'MANAGE_CLASSES')")
     public ResponseEntity<List<SchoolDTO>> findAll() {
         List<SchoolDTO> schoolDTOs = service.findAll()
                 .stream()
@@ -64,7 +65,7 @@ public class SchoolController {
     }
 
     @DeleteMapping("/{id}")
-
+    @PreAuthorize("hasAuthority('MANAGE_SCHOOLS')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();

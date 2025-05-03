@@ -3,6 +3,7 @@ package tn.esprit.new_timetableservice.controllers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.new_timetableservice.dto.SpecialtyDTO;
@@ -26,6 +27,7 @@ public class SpecialtyController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('MANAGE_SPECIALTIES')")
     public ResponseEntity<SpecialtyDTO> create(@Valid @RequestBody SpecialtyDTO specialtyDTO) {
         logger.info("Creating specialty with DTO: {}", specialtyDTO);
         Specialty specialty = toEntity(specialtyDTO);
@@ -34,6 +36,7 @@ public class SpecialtyController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('MANAGE_SPECIALTIES')")
     public ResponseEntity<SpecialtyDTO> update(@PathVariable Long id, @Valid @RequestBody SpecialtyDTO specialtyDTO) {
         logger.info("Updating specialty with id: {}, DTO: {}", id, specialtyDTO);
         Specialty specialty = toEntity(specialtyDTO);
@@ -43,6 +46,7 @@ public class SpecialtyController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('MANAGE_SPECIALTIES')")
     public ResponseEntity<SpecialtyDTO> findById(@PathVariable Long id) {
         logger.info("Fetching specialty with id: {}", id);
         Specialty specialty = service.findById(id);
@@ -50,6 +54,7 @@ public class SpecialtyController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('MANAGE_SPECIALTIES')")
     public ResponseEntity<List<SpecialtyDTO>> findAll() {
         logger.info("Fetching all specialties");
         List<SpecialtyDTO> specialtyDTOs = service.findAll()
@@ -60,6 +65,7 @@ public class SpecialtyController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('MANAGE_SPECIALTIES')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         logger.info("Deleting specialty with id: {}", id);
         service.delete(id);

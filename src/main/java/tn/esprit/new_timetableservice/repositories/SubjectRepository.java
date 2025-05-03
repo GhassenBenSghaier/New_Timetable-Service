@@ -4,8 +4,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import tn.esprit.new_timetableservice.entities.Subject;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface SubjectRepository extends JpaRepository<Subject, Long> {
-    Subject findByName(String name);
+
+    Optional<Subject> findByName(String name);
     List<Subject> findAll();
 }

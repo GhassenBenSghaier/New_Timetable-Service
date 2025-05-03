@@ -2,13 +2,11 @@ package tn.esprit.new_timetableservice.dto;
 
 import lombok.Data;
 
-import java.util.List;
-
 @Data
-public class TeacherDTO {
+public class TeacherCreationDTO {
     private Long id;
     private String name;
     private Integer maxHoursPerWeek;
-    private SubjectDTO subject;
-    private List<ProgramDTO> programs;
+    private Long subjectId;
+    private Long schoolId;
 }

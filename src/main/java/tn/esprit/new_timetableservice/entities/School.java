@@ -21,14 +21,11 @@ public class School {
     @Column(name = "academic_year")
     private String academicYear;
 
-    @Column(name = "region") // New attribute
+    @Column(name = "region")
     private String region;
 
-    @Column(name = "type") // New attribute
+    @Column(name = "type")
     private String type;
-
-    @OneToMany(mappedBy = "school", cascade = CascadeType.ALL)
-    private List<Level> levels;
 
     @OneToMany(mappedBy = "school", cascade = CascadeType.ALL)
     private List<Teacher> teachers;

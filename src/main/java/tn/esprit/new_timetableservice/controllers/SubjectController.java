@@ -3,6 +3,7 @@ package tn.esprit.new_timetableservice.controllers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.new_timetableservice.dto.SubjectDTO;
@@ -25,6 +26,7 @@ public class SubjectController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('MANAGE_SUBJECTS')")
     public ResponseEntity<SubjectDTO> create(@Valid @RequestBody SubjectDTO subjectDTO) {
         logger.info("Creating subject with DTO: {}", subjectDTO);
         Subject subject = toEntity(subjectDTO);
@@ -33,6 +35,7 @@ public class SubjectController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('MANAGE_SUBJECTS')")
     public ResponseEntity<SubjectDTO> update(@PathVariable Long id, @Valid @RequestBody SubjectDTO subjectDTO) {
         logger.info("Updating subject with id: {}, DTO: {}", id, subjectDTO);
         Subject subject = toEntity(subjectDTO);
@@ -42,6 +45,7 @@ public class SubjectController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGE_SUBJECTS', 'MANAGE_CLASSROOMS', 'MANAGE_TIME_SLOTS', 'MANAGE_CLASSES')")
     public ResponseEntity<SubjectDTO> findById(@PathVariable Long id) {
         logger.info("Fetching subject with id: {}", id);
         Subject subject = service.findById(id);
@@ -49,6 +53,7 @@ public class SubjectController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('MANAGE_SUBJECTS', 'MANAGE_CLASSROOMS', 'MANAGE_TIME_SLOTS', 'MANAGE_CLASSES')")
     public ResponseEntity<List<SubjectDTO>> findAll() {
         logger.info("Fetching all subjects");
         List<SubjectDTO> subjectDTOs = service.findAll()
@@ -59,6 +64,7 @@ public class SubjectController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('MANAGE_SUBJECTS')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         logger.info("Deleting subject with id: {}", id);
         service.delete(id);

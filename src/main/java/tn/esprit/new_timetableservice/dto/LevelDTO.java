@@ -6,5 +6,5 @@ import lombok.Data;
 public class LevelDTO {
     private Long id;
     private String name;
-    private Long schoolId;
+    private boolean supportsSpecialty;
 }

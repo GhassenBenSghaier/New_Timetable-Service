@@ -32,6 +32,9 @@ public class CapacityService {
     @Autowired
     private TimeSlotRepository timeSlotRepository;
 
+    @Autowired
+    private SubjectRepository subjectRepository; // Added to fetch Subject entities
+
     public CapacityResponse calculateCapacity(Long schoolId, Map<Long, Integer> desiredClasses) {
         // Validate inputs
         if (schoolId == null || desiredClasses == null || desiredClasses.isEmpty()) {
@@ -42,13 +45,7 @@ public class CapacityService {
         });
 
         // Fetch school data
-        List<Class> existingClasses = classRepository.findAll().stream()
-                .filter(c -> {
-                    Program prog = c.getProgram();
-                    Level level = prog.getLevel();
-                    return level != null && level.getSchool() != null && schoolId.equals(level.getSchool().getId());
-                })
-                .collect(Collectors.toList());
+        List<Class> existingClasses = classRepository.findBySchoolId(schoolId);
         List<Classroom> classrooms = classroomRepository.findBySchoolId(schoolId);
         List<ProgramSubject> programSubjects = programSubjectRepository.findAll();
         List<Teacher> teachers = teacherRepository.findBySchoolId(schoolId);
@@ -106,47 +103,21 @@ public class CapacityService {
             }
         }
 
-        // Map subjects to required classroom types
-        Map<Long, String> subjectToRoomType = new HashMap<>();
-        subjectToRoomType.put(1L, "standard"); // Arabic
-        subjectToRoomType.put(2L, "standard"); // French
-        subjectToRoomType.put(3L, "standard"); // English
-        subjectToRoomType.put(4L, "standard"); // History
-        subjectToRoomType.put(5L, "standard"); // Geography
-        subjectToRoomType.put(6L, "standard"); // Islamic Education
-        subjectToRoomType.put(7L, "standard"); // Civic Education
-        subjectToRoomType.put(8L, "standard"); // Mathematics
-        subjectToRoomType.put(9L, "science_lab"); // Physics
-        subjectToRoomType.put(10L, "science_lab"); // Biology
-        subjectToRoomType.put(11L, "computer_lab"); // Computer Science
-        subjectToRoomType.put(12L, "technology_lab"); // Technological Education
-        subjectToRoomType.put(13L, "gym"); // Physical Education
-        subjectToRoomType.put(14L, "standard"); // Philosophy
-        subjectToRoomType.put(15L, "standard"); // Economics
-        subjectToRoomType.put(16L, "standard"); // Business Management
-        subjectToRoomType.put(17L, "electrical_lab"); // Electrical Engineering
-        subjectToRoomType.put(18L, "mechanical_lab"); // Mechanical Engineering
-        subjectToRoomType.put(19L, "standard"); // Third Foreign Language
-        subjectToRoomType.put(20L, "standard"); // Musical Education
-        subjectToRoomType.put(21L, "standard"); // Artistic Education
-        subjectToRoomType.put(22L, "computer_lab"); // Algorithms
-        subjectToRoomType.put(23L, "computer_lab"); // ICT
-        subjectToRoomType.put(24L, "computer_lab"); // Systems and Networks
-        subjectToRoomType.put(25L, "computer_lab"); // Databases
-
-        // Calculate required hours per room type
+        // Calculate required hours per room type using Subject's roomType
         Map<String, Integer> roomTypeHours = new HashMap<>();
         for (Map.Entry<Long, Integer> entry : requiredHours.entrySet()) {
             Long subjectId = entry.getKey();
             Integer hours = entry.getValue();
-            String roomType = subjectToRoomType.getOrDefault(subjectId, "standard");
+            Subject subject = subjectRepository.findById(subjectId)
+                    .orElseThrow(() -> new IllegalArgumentException("Subject not found: " + subjectId));
+            String roomType = subject.getRoomType() != null ? subject.getRoomType().toLowerCase() : "standard";
             roomTypeHours.merge(roomType, hours, Integer::sum);
         }
 
         // Calculate available room hours
         Map<String, Integer> availableRoomHours = classrooms.stream()
                 .collect(Collectors.groupingBy(
-                        Classroom::getType,
+                        classroom -> classroom.getType().toLowerCase(),
                         Collectors.summingInt(c -> timeSlots.size())
                 ));
 
@@ -198,7 +169,7 @@ public class CapacityService {
                         : "Adjusted class counts to meet constraints."
         );
     }
-
+// ***************        suggestion section       *****************
     private Map<Long, Integer> adjustClassCounts(Long schoolId, Map<Long, Integer> desiredClasses) {
         Map<Long, Integer> adjustedClasses = new HashMap<>(desiredClasses);
         List<Long> programIds = new ArrayList<>(desiredClasses.keySet());
@@ -225,7 +196,8 @@ public class CapacityService {
                 List<ProgramSubject> subjects = programSubjectRepository.findByProgramId(programId);
                 for (ProgramSubject ps : subjects) {
                     requiredHours.merge(ps.getSubject().getId(), numClasses * ps.getHoursPerWeek(), Integer::sum);
-                    String roomType = getRoomTypeForSubject(ps.getSubject().getId());
+                    Subject subject = ps.getSubject();
+                    String roomType = subject.getRoomType() != null ? subject.getRoomType().toLowerCase() : "standard";
                     roomTypeHours.merge(roomType, numClasses * ps.getHoursPerWeek(), Integer::sum);
                 }
             }
@@ -250,7 +222,7 @@ public class CapacityService {
             // Check room constraints
             Map<String, Integer> availableRoomHours = classroomRepository.findBySchoolId(schoolId).stream()
                     .collect(Collectors.groupingBy(
-                            Classroom::getType,
+                            classroom -> classroom.getType().toLowerCase(),
                             Collectors.summingInt(c -> timeSlotRepository.findBySchoolId(schoolId).size())
                     ));
             for (Map.Entry<String, Integer> entry : roomTypeHours.entrySet()) {
@@ -310,7 +282,11 @@ public class CapacityService {
 
     private void reduceClassesForRoomType(Map<Long, Integer> classCounts, String roomType) {
         List<ProgramSubject> subjects = programSubjectRepository.findAll().stream()
-                .filter(ps -> getRoomTypeForSubject(ps.getSubject().getId()).equals(roomType))
+                .filter(ps -> {
+                    Subject subject = ps.getSubject();
+                    String subjectRoomType = subject.getRoomType() != null ? subject.getRoomType().toLowerCase() : "standard";
+                    return subjectRoomType.equals(roomType);
+                })
                 .collect(Collectors.toList());
         subjects.sort((s1, s2) -> {
             Program p1 = s1.getProgram();
@@ -346,35 +322,5 @@ public class CapacityService {
             }
         }
         return maxProgId;
-    }
-
-    private String getRoomTypeForSubject(Long subjectId) {
-        Map<Long, String> subjectToRoomType = new HashMap<>();
-        subjectToRoomType.put(1L, "standard"); // Arabic
-        subjectToRoomType.put(2L, "standard"); // French
-        subjectToRoomType.put(3L, "standard"); // English
-        subjectToRoomType.put(4L, "standard"); // History
-        subjectToRoomType.put(5L, "standard"); // Geography
-        subjectToRoomType.put(6L, "standard"); // Islamic Education
-        subjectToRoomType.put(7L, "standard"); // Civic Education
-        subjectToRoomType.put(8L, "standard"); // Mathematics
-        subjectToRoomType.put(9L, "science_lab"); // Physics
-        subjectToRoomType.put(10L, "science_lab"); // Biology
-        subjectToRoomType.put(11L, "computer_lab"); // Computer Science
-        subjectToRoomType.put(12L, "technology_lab"); // Technological Education
-        subjectToRoomType.put(13L, "gym"); // Physical Education
-        subjectToRoomType.put(14L, "standard"); // Philosophy
-        subjectToRoomType.put(15L, "standard"); // Economics
-        subjectToRoomType.put(16L, "standard"); // Business Management
-        subjectToRoomType.put(17L, "electrical_lab"); // Electrical Engineering
-        subjectToRoomType.put(18L, "mechanical_lab"); // Mechanical Engineering
-        subjectToRoomType.put(19L, "standard"); // Third Foreign Language
-        subjectToRoomType.put(20L, "standard"); // Musical Education
-        subjectToRoomType.put(21L, "standard"); // Artistic Education
-        subjectToRoomType.put(22L, "computer_lab"); // Algorithms
-        subjectToRoomType.put(23L, "computer_lab"); // ICT
-        subjectToRoomType.put(24L, "computer_lab"); // Systems and Networks
-        subjectToRoomType.put(25L, "computer_lab"); // Databases
-        return subjectToRoomType.getOrDefault(subjectId, "standard");
     }
 }

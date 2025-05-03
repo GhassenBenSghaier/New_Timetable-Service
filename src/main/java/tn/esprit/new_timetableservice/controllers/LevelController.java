@@ -3,6 +3,7 @@ package tn.esprit.new_timetableservice.controllers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.new_timetableservice.dto.LevelDTO;
@@ -31,6 +32,7 @@ public class LevelController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('MANAGE_LEVELS')")
     public ResponseEntity<LevelDTO> create(@Valid @RequestBody LevelDTO levelDTO) {
         logger.info("Creating level with DTO: {}", levelDTO);
         Level level = toEntity(levelDTO);
@@ -39,6 +41,7 @@ public class LevelController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('MANAGE_LEVELS')")
     public ResponseEntity<LevelDTO> update(@PathVariable Long id, @Valid @RequestBody LevelDTO levelDTO) {
         logger.info("Updating level with id: {}, DTO: {}", id, levelDTO);
         Level level = toEntity(levelDTO);
@@ -48,6 +51,7 @@ public class LevelController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('MANAGE_LEVELS')")
     public ResponseEntity<LevelDTO> findById(@PathVariable Long id) {
         logger.info("Fetching level with id: {}", id);
         Level level = levelService.findById(id);
@@ -55,6 +59,7 @@ public class LevelController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('MANAGE_LEVELS')")
     public ResponseEntity<List<LevelDTO>> findAll() {
         logger.info("Fetching all levels");
         List<LevelDTO> levelDTOs = levelService.findAll()
@@ -65,6 +70,7 @@ public class LevelController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('MANAGE_LEVELS')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         logger.info("Deleting level with id: {}", id);
         levelService.delete(id);
@@ -75,18 +81,14 @@ public class LevelController {
         LevelDTO dto = new LevelDTO();
         dto.setId(level.getId());
         dto.setName(level.getName());
-        dto.setSchoolId(level.getSchool().getId());
+        dto.setSupportsSpecialty(level.isSupportsSpecialty());
         return dto;
     }
 
     private Level toEntity(LevelDTO dto) {
         Level level = new Level();
         level.setName(dto.getName());
-        School school = schoolService.findById(dto.getSchoolId());
-        if (school == null) {
-            throw new EntityNotFoundException("School with id " + dto.getSchoolId() + " not found");
-        }
-        level.setSchool(school);
+        level.setSupportsSpecialty(dto.isSupportsSpecialty());
         return level;
     }
 }

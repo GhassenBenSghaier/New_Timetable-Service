@@ -51,6 +51,31 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/timetable/generate").hasAuthority("GENERATE_TIMETABLE")
                         .requestMatchers(HttpMethod.GET, "/api/v1/timetable/**").hasAuthority("VIEW_TIMETABLE")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/timetable/**").hasAuthority("EDIT_TIMETABLE")
+                        // ClassController endpoints
+                        .requestMatchers("/api/v1/classes/**").hasAuthority("MANAGE_CLASSES")
+                        // ClassroomController endpoints
+                        .requestMatchers("/api/v1/classrooms/**").hasAuthority("MANAGE_CLASSROOMS")
+                        // LevelController endpoints
+                        .requestMatchers("/api/v1/levels/**").hasAuthority("MANAGE_LEVELS")
+                        // SchoolController endpoints
+                        .requestMatchers(HttpMethod.POST, "/api/v1/schools").hasAnyAuthority("MANAGE_SCHOOLS", "MANAGE_CLASSROOMS", "MANAGE_TIME_SLOTS", "MANAGE_CLASSES")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/schools/**").hasAuthority("MANAGE_SCHOOLS")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/schools/**").hasAnyAuthority("MANAGE_SCHOOLS", "MANAGE_CLASSROOMS", "MANAGE_TIME_SLOTS", "MANAGE_CLASSES")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/schools/**").hasAuthority("MANAGE_SCHOOLS")
+                        // SpecialtyController endpoints
+                        .requestMatchers("/api/v1/specialties/**").hasAuthority("MANAGE_SPECIALTIES")
+                        // SubjectController endpoints
+                        .requestMatchers(HttpMethod.GET, "/api/v1/subjects/**").hasAnyAuthority("MANAGE_SUBJECTS", "MANAGE_CLASSROOMS", "MANAGE_TIME_SLOTS", "MANAGE_CLASSES")
+                        .requestMatchers("/api/v1/subjects/**").hasAuthority("MANAGE_SUBJECTS")
+                        // TimeSlotController endpoints
+                        .requestMatchers("/api/v1/timeslots/**").hasAuthority("MANAGE_TIME_SLOTS")
+                        // TeacherController endpoints
+                        .requestMatchers(HttpMethod.POST, "/api/v1/teachers").hasAuthority("ADD_USER_TEACHER")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/teachers/**").hasAuthority("EDIT_USER_TEACHER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/teachers/**").hasAuthority("DELETE_USER_TEACHER")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/teachers/**").hasAuthority("EDIT_USER_TEACHER")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/teachers/*/programs/*").hasAuthority("EDIT_USER_TEACHER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/teachers/*/programs/*").hasAuthority("EDIT_USER_TEACHER")
                         // Public endpoints
                         .requestMatchers("/new-timetable-service/public/**").permitAll()
                         .anyRequest().authenticated()

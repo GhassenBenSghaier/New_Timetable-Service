@@ -24,5 +24,5 @@ public class Classroom {
     private Integer capacity;
 
     @Column(name = "type")
-    private String type; // e.g., "Lab", "Lecture"
+    private String type;
 }

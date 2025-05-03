@@ -6,6 +6,7 @@ import jakarta.persistence.*;
         import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -14,7 +15,6 @@ import java.util.List;
 @Setter
 public class Teacher {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -34,7 +34,7 @@ public class Teacher {
             joinColumns = @JoinColumn(name = "teacher_id"),
             inverseJoinColumns = @JoinColumn(name = "program_id")
     )
-    private List<Program> programs;
+    private List<Program> programs = new ArrayList<>();
 
     @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL)
     private List<TeacherAvailability> availabilities;

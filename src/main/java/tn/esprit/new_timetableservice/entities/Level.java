@@ -15,12 +15,11 @@ public class Level {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "school_id", nullable = false)
-    private School school;
-
     @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    private boolean supportsSpecialty;
 
     @OneToMany(mappedBy = "level", cascade = CascadeType.ALL)
     private List<Specialty> specialties;

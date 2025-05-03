@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.new_timetableservice.dto.ClassroomDTO;
@@ -29,6 +30,7 @@ public class ClassroomController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('MANAGE_CLASSROOMS')")
     public ResponseEntity<ClassroomDTO> create(@Valid @RequestBody ClassroomDTO classroomDTO) {
         logger.info("Creating classroom with DTO: {}", classroomDTO);
         try {
@@ -47,6 +49,7 @@ public class ClassroomController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('MANAGE_CLASSROOMS')")
     public ResponseEntity<ClassroomDTO> update(@PathVariable Long id, @Valid @RequestBody ClassroomDTO classroomDTO) {
         logger.info("Updating classroom with id: {}, DTO: {}", id, classroomDTO);
         try {
@@ -61,6 +64,7 @@ public class ClassroomController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('MANAGE_CLASSROOMS')")
     public ResponseEntity<ClassroomDTO> findById(@PathVariable Long id) {
         logger.info("Fetching classroom with id: {}", id);
         Classroom classroom = service.findById(id);
@@ -68,6 +72,7 @@ public class ClassroomController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('MANAGE_CLASSROOMS')")
     public ResponseEntity<List<ClassroomDTO>> findAll() {
         logger.info("Fetching all classrooms");
         List<ClassroomDTO> classroomDTOs = service.findAll()
@@ -78,6 +83,7 @@ public class ClassroomController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('MANAGE_CLASSROOMS')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         logger.info("Deleting classroom with id: {}", id);
         service.delete(id);

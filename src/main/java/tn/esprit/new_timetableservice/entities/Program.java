@@ -18,16 +18,16 @@ public class Program {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "level_id", nullable = true) // Null for Level 1
+    @JoinColumn(name = "level_id", nullable = true)
     private Level level;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "specialty_id", nullable = true) // Null for Level 1
+    @JoinColumn(name = "specialty_id", nullable = true)
     private Specialty specialty;
 
     @Column(nullable = false, unique = true)
-    private String name; // e.g., "Level 1", "2Science", "3Math"
+    private String name;
 
-    @OneToMany(mappedBy = "program", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "program", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ProgramSubject> programSubjects;
 }
