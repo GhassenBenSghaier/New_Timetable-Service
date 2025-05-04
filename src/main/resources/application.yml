@@ -66,7 +66,6 @@
 
 
 
-
 server:
   port: 8083
 
@@ -117,14 +116,21 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,loggers,metrics
+  endpoint:
+    health:
+      show-details: always
+    loggers:
+      enabled: true
 
 logging:
   level:
-    org.springframework.web: DEBUG
+    root: INFO
+    org.springframework.web: TRACE
+    org.springframework.security: TRACE
     org.hibernate: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql: TRACE
-    tn.esprit.newtimetableservice: DEBUG
+    tn.esprit.new_timetableservice: TRACE
     com.netflix.discovery: DEBUG
     com.netflix.eureka: DEBUG
