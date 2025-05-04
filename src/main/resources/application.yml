@@ -126,7 +126,7 @@ management:
     loggers:
       enabled: true
   security:
-    enabled: false  # Temporary for debugging, remove in production
+    enabled: false  # Temporary for debugging
 
 logging:
   level:

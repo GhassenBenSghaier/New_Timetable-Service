@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+    </root>
+
+    <logger name="org.springframework.web" level="TRACE" additivity="false">
+        <appender-ref ref="CONSOLE" />
+    </logger>
+    <logger name="org.springframework.security" level="TRACE" additivity="false">
+        <appender-ref ref="CONSOLE" />
+    </logger>
+    <logger name="org.hibernate" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE" />
+    </logger>
+    <logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE" />
+    </logger>
+    <logger name="org.hibernate.type.descriptor.sql" level="TRACE" additivity="false">
+        <appender-ref ref="CONSOLE" />
+    </logger>
+    <logger name="tn.esprit.new_timetableservice" level="TRACE" additivity="false">
+        <appender-ref ref="CONSOLE" />
+    </logger>
+    <logger name="com.netflix.discovery" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE" />
+    </logger>
+    <logger name="com.netflix.eureka" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE" />
+    </logger>
+</configuration>
