@@ -86,6 +86,9 @@ spring:
         show_sql: true
         format_sql: true
     show-sql: true
+  security:
+    actuator:
+      roles: ACTUATOR,ADMIN
 
 eureka:
   client:
@@ -122,6 +125,8 @@ management:
       show-details: always
     loggers:
       enabled: true
+  security:
+    enabled: false  # Temporary for debugging, remove in production
 
 logging:
   level:
