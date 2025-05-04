@@ -78,6 +78,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/teachers/*/programs/*").hasAuthority("EDIT_USER_TEACHER")
                         // Public endpoints
                         .requestMatchers("/new-timetable-service/public/**").permitAll()
+                        .requestMatchers("/api/v1/program/debug", "/actuator/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);

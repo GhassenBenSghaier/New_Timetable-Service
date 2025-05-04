@@ -119,14 +119,14 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,loggers,metrics
+        include: health,info,loggers,metrics,mappings,env,configprops
   endpoint:
     health:
       show-details: always
     loggers:
       enabled: true
   security:
-    enabled: false  # Temporary for debugging
+    enabled: false  # Disable Actuator security
 
 logging:
   level:
