@@ -109,11 +109,11 @@ jwt:
 
 timetable:
   population:
-    size: 100
+    size: 180
   mutation:
     rate: 0.1
   max:
-    generations: 50
+    generations: 80
 
 management:
   endpoints:
